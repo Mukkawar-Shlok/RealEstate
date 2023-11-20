@@ -1,7 +1,9 @@
 import User from '../models/user.model.js'
 import bcrypt from 'bcryptjs'
 
-export default async function signup(req,res){
+import errorHandeler from '../utils/error.js';
+
+export default async function signup(req,res,next){
     const {username,email,password} = req.body;
     try{
 
@@ -16,7 +18,8 @@ export default async function signup(req,res){
             .then(()=>{
                 res.status(201).json({message:"User created sucessfully"});
             }).catch((err)=>{
-                res.status(500).json({message:"Failed to create user."})
+                // res.status(500).json({message:"Failed to create user."})
+                next(err);
             })
     }catch(err){
         console.log(err);
