@@ -1,6 +1,7 @@
 import User from '../models/user.model.js'
 import bcrypt from 'bcryptjs'
 
+//custom error creater function which takes status code and message in string as parameters
 import errorHandeler from '../utils/error.js';
 
 export default async function signup(req,res,next){
@@ -10,9 +11,10 @@ export default async function signup(req,res,next){
         //if any coming information in incomplete
         if(!username || !email || !password) return res.status(500).json({message:"Incomplete information"})
 
-        //hashed password 
+        // create hashed password 
         const hashedPassword = bcrypt.hashSync(password,10);
 
+        //save hashed password for making the application more secure
         const newUser = new User({username,email,password:hashedPassword});
         await newUser.save()
             .then(()=>{
