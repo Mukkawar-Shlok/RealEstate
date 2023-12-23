@@ -4,7 +4,9 @@ import bcrypt from 'bcryptjs'
 //custom error creater function which takes status code and message in string as parameters
 import errorHandeler from '../utils/error.js';
 
-export default async function signup(req,res,next){
+import  jwt  from 'jsonwebtoken';
+
+export async function signup(req,res,next){
     const {username,email,password} = req.body;
     try{
 
@@ -29,3 +31,24 @@ export default async function signup(req,res,next){
     }
 
 };
+
+export async function signin(req,res,next){
+
+    const {email,password}  = req.body;
+    try{
+        const validUser = await User.findOne({email:email})
+        if(!validUser) return next(errorHandeler(404,"User does not exists"));
+        
+        const validPassword = bcrypt.compareSync(password,validUser.password);
+        if(!validPassword) return next(errorHandeler(404,"Wrong Credentials"));
+        
+        const token = jwt.sign({id:validUser._id},process.env.JWT_SECRET)
+        const {password :passw,...userInfo} = validUser._doc;
+        res.cookie('access_token',token,{httpOnly:true,expires:new Date(Date.now() + 24*60*60)}).status(200).json(userInfo)
+        
+
+    }catch(error){
+        next(error);
+    }
+
+}
