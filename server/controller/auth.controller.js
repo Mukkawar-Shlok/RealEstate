@@ -52,3 +52,26 @@ export async function signin(req,res,next){
     }
 
 }
+
+export async function google(req,res,next){
+    try{
+        const user = await User.findOne({email:req.body.email})
+        if(user){
+            const token  = jwt.sign({id:user._id},process.env.JWT_SECRET);
+            const {password:pass,...userInfo} = user._doc;
+            res.cookie('access_token',token,{httpOnly:true,expires:new Date(Date.now() + 24*60*60)}).status(200).json(userInfo)
+        }else{
+            const GeneratedPassword = Math.random.toString(36).slice(-8) + Math.random.toString(36).slice(-8);
+            const hashedPassword = bcrypt.hashSync(GeneratedPassword,10)
+            const newUsername = req.body.name.split(" ").join().toLowerCase() + Math.random.toString(36).slice(-4)
+            const newUser = User.create({username:newUsername,email:req.body.email,password:hashedPassword,avatar:req.body.photo})
+            (await newUser).save()
+            const {password:pass,...userInfo} = newUser._doc;
+            const token  = jwt.sign({id:newUser._id},process.env.JWT_SECRET);
+            res.cookie('access_token',token,{httpOnly:true,expires:new Date(Date.now() + 24*60*60)}).status(200).json(userInfo)
+        }
+    }catch(error){
+        //passing the error to next function defined in index.js
+        next(error)
+    }
+}

@@ -1,6 +1,7 @@
 //for creating the anchor tag
 import { useState } from 'react';
 import {Link, useNavigate } from 'react-router-dom';
+import OAuth from '../components/OAuth';
 function SignUp() {
   //states
   const [formData, setFormData] = useState({});
@@ -56,6 +57,7 @@ function SignUp() {
         <button className="bg-slate-400 rounded-lg uppercase text-white hover:opacity-95 disabled:opacity-80 p-2" disabled={loading}>
           {loading ? 'Loading...' : 'Sign up'}
           </button>
+          <OAuth/>
       </form>
       <div className='flex gap-2'>
         <p>Have an account?</p>
