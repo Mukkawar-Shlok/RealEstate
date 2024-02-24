@@ -2,6 +2,7 @@ import express from 'express';
 import router from './routes/index.js';
 
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 //for making dotenv actully work
 dotenv.config();
 
@@ -9,6 +10,7 @@ import connectToDatabase from './config/mongoose.js';
 
 const app  = express();
 
+app.use(cookieParser());
 app.use(express.json());
 
 const PORT = 3000;
